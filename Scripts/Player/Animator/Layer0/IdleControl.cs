@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class IdleControl : StateMachineBehaviour
 {
-    override public void OnStateStart(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
     }
