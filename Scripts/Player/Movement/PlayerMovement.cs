@@ -4,18 +4,23 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public bool AllowedToMove
-    {
-        get { return allowedToMove; }
-    }
+    private AnimationController animController;
 
     [SerializeField]
     private float movementSpeed;
+    [SerializeField]
+    private float combatMovementSpeed;
 
     // false - looking right, true - looking left
     private bool direction = false;
 
+    public bool AllowedToMove { get { return allowedToMove; } }
     private bool allowedToMove = true;
+
+    private void Awake()
+    {
+        animController = this.GetComponent<AnimationController>();
+    }
 
     private void Start()
     {
@@ -43,9 +48,12 @@ public class PlayerMovement : MonoBehaviour
 
         transform.localScale = direction ? scaleK * (Vector2.left + Vector2.up) : scaleK * (Vector2.right + Vector2.up);
 
-        // chaning the character's position
+        // changing the character's position
         Vector2 curPos = transform.position;
-        Vector2 newPos = new Vector2(curPos.x + horizontal * Time.deltaTime * movementSpeed, curPos.y);
+
+        // changing the character's movement speed depending on whether he's in the combat mode or not
+        float speedMultiplier = animController.PlayerInCombatMode ? combatMovementSpeed : movementSpeed;
+        Vector2 newPos = new Vector2(curPos.x + horizontal * Time.deltaTime * speedMultiplier, curPos.y);
 
         transform.position = newPos;
     }

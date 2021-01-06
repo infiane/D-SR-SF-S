@@ -4,16 +4,23 @@ using UnityEngine;
 
 public class AnimationController : MonoBehaviour
 {
+
     private Animator animator;
     private PlayerMovement playerMov;
 
+
     // A boolean that shows whether the character entered the combat mode or nah
+    public bool PlayerInCombatMode { get { return playerInCombatMode; } }
     private bool playerInCombatMode;
 
-    private void Start()
+    private void Awake()
     {
         animator = this.GetComponent<Animator>();
         playerMov = this.GetComponent<PlayerMovement>();
+    }
+
+    private void Start()
+    {
         playerInCombatMode = false;
     }
 
