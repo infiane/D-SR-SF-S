@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerAnimationType { TRANSITION_IDLE_INTO_COMBATSTANCE,
+                                  TRANSITION_COMBATSTANCE_INTO_IDLE }
+
 public class AnimationController : MonoBehaviour
 {
 
     private Animator animator;
     private PlayerMovement playerMov;
-
-
-    // A boolean that shows whether the character entered the combat mode or nah
-    public bool PlayerInCombatMode { get { return playerInCombatMode; } }
-    private bool playerInCombatMode;
 
     private void Awake()
     {
@@ -19,32 +17,19 @@ public class AnimationController : MonoBehaviour
         playerMov = this.GetComponent<PlayerMovement>();
     }
 
-    private void Start()
-    {
-        playerInCombatMode = false;
-    }
-
-    private void FixedUpdate()
-    {
-        if (playerMov.AllowedToMove)
-        {
-            AnimationChange();
-        }
-    }
-
     /*
-        Gets input from the player and triggers animations from it
+        Gets the type of animation it is required to play and plays it
     */
-    private void AnimationChange()
+    public void CallAnimationChange(PlayerAnimationType animType)
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        switch(animType)
         {
-            if (playerInCombatMode)
-            {
-
-            }
-            animator.SetTrigger(playerInCombatMode ? "CombatIntoTrans" : "TransIntoCombat");
-            playerInCombatMode = !playerInCombatMode;
+            case PlayerAnimationType.TRANSITION_IDLE_INTO_COMBATSTANCE:
+                animator.SetTrigger("TransIntoCombat");
+                break;
+            case PlayerAnimationType.TRANSITION_COMBATSTANCE_INTO_IDLE:
+                animator.SetTrigger("CombatIntoTrans");
+                break;
         }
     }
 }
