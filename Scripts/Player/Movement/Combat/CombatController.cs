@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Stance { TOP, MIDDLE, BOTTOM };
-public enum AttackType { SLICE, THRUST };
+public enum Stance { TOP, MIDDLE, BOTTOM, NULL = 101 };
+public enum AttackType { SLICE, THRUST, NULL = 101 };
 
 public class CombatController : MonoBehaviour
 {
@@ -31,7 +31,7 @@ public class CombatController : MonoBehaviour
     private void Start()
     {
         playerInCombatMode = false;
-        currentPlayerStance = Stance.TOP;
+        currentPlayerStance = Stance.NULL;
     }
 
     /*
@@ -56,34 +56,41 @@ public class CombatController : MonoBehaviour
         TODO: describe this mf
     */
     public void ChangeStanceMode(Stance stanceMode)
-    {
-        currentPlayerStance = stanceMode;
-        switch (stanceMode)
+    { 
+        if (currentPlayerStance != stanceMode)
         {
-            case Stance.TOP:
-                // TODO: change to top animation
-                break;
-            case Stance.MIDDLE:
-                // TODO: change to middle animation
-                break;
-            case Stance.BOTTOM:
-                // TODO: change to bottom animation
-                break;
+            switch (stanceMode)
+            {
+                case Stance.TOP:
+                    // TODO: change to top animation
+                   
+                    break;
+                case Stance.MIDDLE:
+                    // TODO: change to middle animation
+                    break;
+                case Stance.BOTTOM:
+                    // TODO: change to bottom animation
+                    break;
+            }
         }
+        currentPlayerStance = stanceMode;
     }
 
     public void CallAnAttack(AttackType attack)
     {
-        switch (attack)
+        if (attackCaller.allowedToAttack)
         {
-            case AttackType.SLICE:
-                // TODO: call a slice in AttackCaller
-                attackCaller.Slice(currentPlayerStance);
-                break;
-            case AttackType.THRUST:
-                // TODO: call a thrust in AttackCaller
-                attackCaller.Thrust(currentPlayerStance);
-                break;
+            switch (attack)
+            {
+                case AttackType.SLICE:
+                    // TODO: call a slice in AttackCaller
+                    attackCaller.Slice(currentPlayerStance);
+                    break;
+                case AttackType.THRUST:
+                    // TODO: call a thrust in AttackCaller
+                    attackCaller.Thrust(currentPlayerStance);
+                    break;
+            }
         }
     }
 }

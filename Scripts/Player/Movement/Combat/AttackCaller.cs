@@ -7,23 +7,28 @@ public class AttackCaller : MonoBehaviour
     // doesn't need an explanation
     private AnimationController animController;
 
-    [SerializeField]
-    [Header("0 - top, 1 - middle, 2 - bottom")]
-    private float[] timeToActivateSliceTrigger;
-    [SerializeField]
-    private float[] timeToActivateThrustTrigger;
-    [Space]
+    // an attack that was before the current one
+    private AttackType previousAttack;
 
-    [Header("3 - TThrust, 4 - MThrust, 5 - BThrust")]
-    [Header("0 - TSlice, 1 - MSlice, 2 - BSlice")]
-    [Header("Time given to make a combo after an attack")]
-    
-    
     [SerializeField]
-    private float[] comboTimeGap;
+    [Tooltip("0 - top from stance to slice, 1 - top from slice to slice, 2 - top from thrust to slice\n" +
+             "3 - middle from stance to slice, 4 - middle from slice to slice, 5 - middle from thrust to slice\n" +
+             "6 - bottom from stance to slice, 7 - bottom from slice to slice, 8 - bottom from thrust to slice\n")]
+    private float[] timeToActivateSliceTrigger;
+
+    [SerializeField]
+    [Tooltip("0 - top from stance to thrust, 1 - top from thrust to thrust, 2 - top from slice to thrust\n" +
+             "3 - middle from stance to thrust, 4 - middle from thrust to thrust, 5 - middle from slice to thrust\n" +
+             "6 - bottom from stance to thrust, 7 - bottom from thrust to thrust, 8 - bottom from slice to thrust\n")]
+    private float[] timeToActivateThrustTrigger;
+
+    // time in which amount the trigger will turn on
+    private int triggerTimeIndex;
+    [Space]
 
     // controlling either we have an option to combo
     private bool allowedToCombo;
+    public bool allowedToAttack { get; private set; }
     
     [Space]
     [SerializeField]
@@ -41,36 +46,227 @@ public class AttackCaller : MonoBehaviour
     private void Start()
     {
         allowedToCombo = false;
+        allowedToAttack = true;
+        previousAttack = AttackType.NULL;
+    }
+
+    private int DefineTriggerTime(PlayerAnimationType animType, Stance playerStance)
+    {
+        switch (playerStance)
+        {
+            case Stance.TOP:
+                switch(animType)
+                {
+                    case PlayerAnimationType.SLICE_FROM_ANY_STANCE:
+                        return 0;
+                    case PlayerAnimationType.THRUST_FROM_ANY_STANCE:
+                        return 0;
+                    case PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE:
+                        return 1;
+                    case PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE:
+                        return 1;
+                    case PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE:
+                        return 2;
+                    case PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE:
+                        return 2;
+                    default:
+                        return -1;
+                }
+            case Stance.MIDDLE:
+                switch (animType)
+                {
+                    case PlayerAnimationType.SLICE_FROM_ANY_STANCE:
+                        return 3;
+                    case PlayerAnimationType.THRUST_FROM_ANY_STANCE:
+                        return 3;
+                    case PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE:
+                        return 4;
+                    case PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE:
+                        return 4;
+                    case PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE:
+                        return 5;
+                    case PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE:
+                        return 5;
+                    default:
+                        return -1;
+                }
+            case Stance.BOTTOM:
+                switch (animType)
+                {
+                    case PlayerAnimationType.SLICE_FROM_ANY_STANCE:
+                        return 6;
+                    case PlayerAnimationType.THRUST_FROM_ANY_STANCE:
+                        return 6;
+                    case PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE:
+                        return 7;
+                    case PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE:
+                        return 7;
+                    case PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE:
+                        return 8;
+                    case PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE:
+                        return 8;
+                    default:
+                        return -1;
+                }
+            default:
+                return -1;
+        }  
     }
 
     #endregion
 
     #region PUBLIIC-FUNCTIONS
 
-    public void Slice(Stance playerStance)
+    public void TurnOnComboTimeGap()
     {
-        if (allowedToCombo)
-            StopAllCoroutines();
-
-        StartCoroutine(ActivateTriggerInTime(timeToActivateSliceTrigger[(int)playerStance], AttackType.SLICE));
-        StartCoroutine(GiveTimeToCombo(comboTimeGap[(int)playerStance]));
-
-        animController.CallAnimationChange(PlayerAnimationType.SLICE_FROM_ANY_STANCE);
-
         allowedToCombo = true;
+        allowedToAttack = true;
     }
 
-    public void Thrust(Stance playerStance)
+    public void TurnOffComboTimeGap()
     {
-        if (allowedToCombo)
+        allowedToCombo = false;
+        allowedToAttack = true;
+        animController.CallAnimationChange(PlayerAnimationType.FROM_ATTACK_TO_STANCE);
+    }
+
+    /*
+        A function that makes a slice attack
+    */
+    public void Slice(Stance playerStance)
+    {
+        // if we fit in the gap for a combo and there was a previous attack
+        if (allowedToCombo && previousAttack != AttackType.NULL)
+        {
+            allowedToCombo = false;
             StopAllCoroutines();
 
-        StartCoroutine(ActivateTriggerInTime(timeToActivateThrustTrigger[(int)playerStance], AttackType.THRUST));
-        StartCoroutine(GiveTimeToCombo(comboTimeGap[3 + (int)playerStance]));
+            if (previousAttack == AttackType.SLICE)
+            {
+                animController.CallAnimationChange(PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE);
 
-        animController.CallAnimationChange(PlayerAnimationType.THRUST_FROM_ANY_STANCE);
+                switch (playerStance)
+                {
+                    case Stance.TOP:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE, Stance.TOP);
+                        break;
+                    case Stance.MIDDLE:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE, Stance.MIDDLE);
+                        break;
+                    case Stance.BOTTOM:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_SLICE_FROM_ANY_STANCE, Stance.BOTTOM);
+                        break;
+                }
+            }
+            else if (previousAttack == AttackType.THRUST)
+            {
+                animController.CallAnimationChange(PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE);
 
-        allowedToCombo = true;
+                switch (playerStance)
+                {
+                    case Stance.TOP:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE, Stance.TOP);
+                        break;
+                    case Stance.MIDDLE:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE, Stance.MIDDLE);
+                        break;
+                    case Stance.BOTTOM:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_SLICE_FROM_ANY_STANCE, Stance.BOTTOM);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            animController.CallAnimationChange(PlayerAnimationType.SLICE_FROM_ANY_STANCE);
+
+            switch (playerStance)
+            {
+                case Stance.TOP:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.TOP);
+                    break;
+                case Stance.MIDDLE:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.MIDDLE);
+                    break;
+                case Stance.BOTTOM:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.BOTTOM);
+                    break;
+            }
+        }
+
+        StartCoroutine(ActivateTriggerInTime(timeToActivateSliceTrigger[triggerTimeIndex], AttackType.SLICE));
+        previousAttack = AttackType.SLICE;
+        allowedToAttack = false;
+        
+    }
+
+    /*
+        A function that makes a thrust attack
+    */
+    public void Thrust(Stance playerStance)
+    {
+        // if we fit in the gap for a combo and there was a previous attack
+        if (allowedToCombo && previousAttack != AttackType.NULL)
+        {
+            allowedToCombo = false;
+            StopAllCoroutines();
+
+            if (previousAttack == AttackType.SLICE)
+            {
+                animController.CallAnimationChange(PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE);
+
+                switch (playerStance)
+                {
+                    case Stance.TOP:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE, Stance.TOP);
+                        break;
+                    case Stance.MIDDLE:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE, Stance.MIDDLE);
+                        break;
+                    case Stance.BOTTOM:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_THRUST_FROM_ANY_STANCE, Stance.BOTTOM);
+                        break;
+                }
+            }
+            else if (previousAttack == AttackType.THRUST)
+            {
+                animController.CallAnimationChange(PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE);
+
+                switch (playerStance)
+                {
+                    case Stance.TOP:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE, Stance.TOP);
+                        break;
+                    case Stance.MIDDLE:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE, Stance.MIDDLE);
+                        break;
+                    case Stance.BOTTOM:
+                        triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.THRUST_THRUST_FROM_ANY_STANCE, Stance.BOTTOM);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            animController.CallAnimationChange(PlayerAnimationType.THRUST_FROM_ANY_STANCE);
+
+            switch (playerStance)
+            {
+                case Stance.TOP:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.TOP);
+                    break;
+                case Stance.MIDDLE:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.MIDDLE);
+                    break;
+                case Stance.BOTTOM:
+                    triggerTimeIndex = DefineTriggerTime(PlayerAnimationType.SLICE_FROM_ANY_STANCE, Stance.BOTTOM);
+                    break;
+            }
+        }
+
+        StartCoroutine(ActivateTriggerInTime(timeToActivateThrustTrigger[triggerTimeIndex], AttackType.THRUST));
+        previousAttack = AttackType.THRUST;
+        allowedToAttack = false;
     }
 
     #endregion
@@ -88,14 +284,6 @@ public class AttackCaller : MonoBehaviour
             sliceTrigger.ActivateTrigger();
         else if (attackType == AttackType.THRUST)
             thrustTrigger.ActivateTrigger();
-    }
-
-    // after an attack has ended a player has a little time gap to continue it to make a combo. if he doesnt continue, we are going back to stance
-    private IEnumerator GiveTimeToCombo(float time)
-    {
-        yield return new WaitForSeconds(time);
-        allowedToCombo = false;
-        animController.CallAnimationChange(PlayerAnimationType.FROM_ATTACK_TO_STANCE);
     }
 
     #endregion

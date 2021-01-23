@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
         playerLookingLeft = false;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (allowedToMove)
         {

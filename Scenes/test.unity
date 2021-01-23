@@ -607,7 +607,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035314042}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.38, y: -0.81, z: 0}
+  m_LocalPosition: {x: -1.32, y: -0.81, z: 0}
   m_LocalScale: {x: 8.888888, y: 7.9999995, z: 8}
   m_Children:
   - {fileID: 47069203}
@@ -628,7 +628,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.059499245, y: 0.007628739}
+  m_Offset: {x: 0.0829396, y: 0.0024612248}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0.5}
@@ -639,7 +639,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.10761539, y: 0.32719386}
+  m_Size: {x: 0.11262955, y: 0.30496866}
   m_EdgeRadius: 0
 --- !u!95 &2035314046
 Animator:
@@ -733,15 +733,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeToActivateSliceTrigger:
-  - 0
-  - 0
-  - 0
-  timeToActivateThrustTrigger: []
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  timeToActivateThrustTrigger:
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
+  - 0.3
   comboTimeGap:
-  - 0.7
+  - 0.8
   - 0.1
   - 0.1
-  - 0.1
+  - 0.65
   - 0.1
   - 0.1
   sliceTrigger: {fileID: 47069205}
