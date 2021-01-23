@@ -51,12 +51,12 @@ public class PlayerMovement : MonoBehaviour
     private void InputChange()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Debug.Log("Mouse Position in world space - " + mousePos);
+        //Debug.Log("Mouse Position in world space - " + mousePos);
 
         Vector2 playerPos = transform.position;
         Vector2 fromPlayerToPos = mousePos - playerPos;
         float angle = Vector2.SignedAngle(Vector2.right, fromPlayerToPos.normalized);
-        Debug.Log("Angle - " + angle);
+        //Debug.Log("Angle - " + angle);
 
         playerLookingLeft = angle <= 90 && angle >= -90 ? false : true;
 

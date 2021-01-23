@@ -5,7 +5,8 @@ using UnityEngine;
 public enum PlayerAnimationType { TRANSITION_IDLE_INTO_STANCETOP,
                                   TRANSITION_STANCETOP_INTO_IDLE,
                                   SLICE_FROM_ANY_STANCE,
-                                  THRUST_FROM_ANY_STANCE }
+                                  THRUST_FROM_ANY_STANCE,
+                                  FROM_ATTACK_TO_STANCE}
 
 public class AnimationController : MonoBehaviour
 {
@@ -37,6 +38,9 @@ public class AnimationController : MonoBehaviour
                 break;
             case PlayerAnimationType.THRUST_FROM_ANY_STANCE:
                 animator.SetTrigger("Thrust");
+                break;
+            case PlayerAnimationType.FROM_ATTACK_TO_STANCE:
+                animator.SetTrigger("BackToStance");
                 break;
         }
     }

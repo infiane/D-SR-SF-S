@@ -737,6 +737,13 @@ MonoBehaviour:
   - 0
   - 0
   timeToActivateThrustTrigger: []
+  comboTimeGap:
+  - 0.7
+  - 0.1
+  - 0.1
+  - 0.1
+  - 0.1
+  - 0.1
   sliceTrigger: {fileID: 47069205}
   thrustTrigger: {fileID: 1618791845}
 --- !u!114 &2035314052
