@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+
+    #region TESTING-VALUES
+    [SerializeField]
+    private float angleAddition = 180;
+
+    #endregion
+
     // player mechanics controllers
     private AnimationController animController;
     private CombatController combController;
@@ -14,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private float combatMovementSpeed;
 
     // false - looking right, true - looking left
-    private bool direction = false;
+    private bool playerLookingLeft = false;
 
     public bool AllowedToMove { get { return allowedToMove; } }
     private bool allowedToMove = true;
@@ -28,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         allowedToMove = true;
-        direction = false;
+        playerLookingLeft = false;
     }
 
     private void FixedUpdate()
@@ -43,24 +50,72 @@ public class PlayerMovement : MonoBehaviour
 
     private void InputChange()
     {
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Debug.Log("Mouse Position in world space - " + mousePos);
+
+        Vector2 playerPos = transform.position;
+        Vector2 fromPlayerToPos = mousePos - playerPos;
+        float angle = Vector2.SignedAngle(Vector2.right, fromPlayerToPos.normalized);
+        Debug.Log("Angle - " + angle);
+
+        playerLookingLeft = angle <= 90 && angle >= -90 ? false : true;
+
+        bool combStanceOn = combController.playerInCombatMode;
+
+        #region stance-input
+        // Transitioning into combat stance
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            if (combController.playerInCombatMode)
+            if (combStanceOn)
                 DisableStanceCall();
             else
                 EnableStanceCall();
         }
-        
+        #endregion
+
+        #region battle-input
+
+        // if player is in combat stance
+        if (combStanceOn)
+        {
+            if (playerLookingLeft)
+            {
+                if (angle < 150 && angle >= 90)
+                    combController.ChangeStanceMode(Stance.TOP);
+                else if (angle <= 180 && angle >= 150 || angle >= -180 && angle <= -150)
+                    combController.ChangeStanceMode(Stance.MIDDLE);
+                else if (angle <= -90 && angle > -150)
+                    combController.ChangeStanceMode(Stance.BOTTOM);
+            }
+            else
+            {
+                if (angle <= 90 && angle > 30)
+                    combController.ChangeStanceMode(Stance.TOP);
+                else if (angle <= 30 && angle >= -30)
+                    combController.ChangeStanceMode(Stance.MIDDLE);
+                else if (angle < -30 && angle >= -90)
+                    combController.ChangeStanceMode(Stance.BOTTOM);
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                combController.CallAnAttack(AttackType.SLICE);
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                combController.CallAnAttack(AttackType.THRUST);
+            }
+        }
+
+        #endregion
+
+        #region moving-input
 
         float horizontal = Input.GetAxis("Horizontal");
-
-        // changing the direction the character looks
-        if (horizontal > 0.1f) direction = false;
-        else if (horizontal < -0.1f) direction = true;
-
         float scaleK = Mathf.Abs(transform.localScale.x);
 
-        transform.localScale = direction ? scaleK * (Vector2.left + Vector2.up) : scaleK * (Vector2.right + Vector2.up);
+        transform.localScale = playerLookingLeft ? scaleK * (Vector2.left + Vector2.up) : scaleK * (Vector2.right + Vector2.up);
+        
 
         // changing the character's position
         Vector2 curPos = transform.position;
@@ -70,6 +125,8 @@ public class PlayerMovement : MonoBehaviour
         Vector2 newPos = new Vector2(curPos.x + horizontal * Time.deltaTime * speedMultiplier, curPos.y);
 
         transform.position = newPos;
+
+        #endregion
     }
 
     /*
@@ -77,7 +134,6 @@ public class PlayerMovement : MonoBehaviour
     */
     private void EnableStanceCall()
     {
-        animController.CallAnimationChange(PlayerAnimationType.TRANSITION_IDLE_INTO_COMBATSTANCE);
         combController.EnableStance();
     }
 
@@ -86,7 +142,6 @@ public class PlayerMovement : MonoBehaviour
     */
     private void DisableStanceCall()
     {
-        animController.CallAnimationChange(PlayerAnimationType.TRANSITION_COMBATSTANCE_INTO_IDLE);
         combController.DisableStance();
     }
 

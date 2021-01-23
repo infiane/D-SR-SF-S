@@ -133,8 +133,9 @@ GameObject:
   m_Component:
   - component: {fileID: 47069203}
   - component: {fileID: 47069204}
+  - component: {fileID: 47069205}
   m_Layer: 0
-  m_Name: TopSliceTrigger
+  m_Name: SliceTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,7 +168,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.17065576, y: 0.017496187}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -180,6 +181,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.039123595, y: 0.16637608}
   m_EdgeRadius: 0
+--- !u!114 &47069205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47069202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6278f00b186203b409cfd8666fe5fa54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +375,7 @@ SpriteShapeRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -450,8 +463,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1618791843}
   - component: {fileID: 1618791844}
+  - component: {fileID: 1618791845}
   m_Layer: 0
-  m_Name: TopThrustTrigger
+  m_Name: ThrustTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -497,6 +511,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.089529365, y: 0.04222797}
   m_EdgeRadius: 0
+--- !u!114 &1618791845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618791842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6278f00b186203b409cfd8666fe5fa54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2035314042
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,7 +632,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0.5}
-    oldSize: {x: 0.25, y: 0.3}
+    oldSize: {x: 0.15, y: 0.3}
     newSize: {x: 0.38, y: 0.91}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -646,6 +672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a33ba95ff0dce468459f38e7d21bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angleAddition: 180
   movementSpeed: 3
   combatMovementSpeed: 2
 --- !u!50 &2035314048
@@ -705,6 +732,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0200589dc195e4541bedfd73e4d55b7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeToActivateSliceTrigger:
+  - 0
+  - 0
+  - 0
+  timeToActivateThrustTrigger: []
+  sliceTrigger: {fileID: 47069205}
+  thrustTrigger: {fileID: 1618791845}
 --- !u!114 &2035314052
 MonoBehaviour:
   m_ObjectHideFlags: 0

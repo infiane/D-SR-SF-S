@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerAnimationType { TRANSITION_IDLE_INTO_COMBATSTANCE,
-                                  TRANSITION_COMBATSTANCE_INTO_IDLE }
+public enum PlayerAnimationType { TRANSITION_IDLE_INTO_STANCETOP,
+                                  TRANSITION_STANCETOP_INTO_IDLE,
+                                  SLICE_FROM_ANY_STANCE,
+                                  THRUST_FROM_ANY_STANCE }
 
 public class AnimationController : MonoBehaviour
 {
@@ -24,11 +26,17 @@ public class AnimationController : MonoBehaviour
     {
         switch(animType)
         {
-            case PlayerAnimationType.TRANSITION_IDLE_INTO_COMBATSTANCE:
+            case PlayerAnimationType.TRANSITION_IDLE_INTO_STANCETOP:
                 animator.SetTrigger("TransIntoCombat");
                 break;
-            case PlayerAnimationType.TRANSITION_COMBATSTANCE_INTO_IDLE:
+            case PlayerAnimationType.TRANSITION_STANCETOP_INTO_IDLE:
                 animator.SetTrigger("CombatIntoTrans");
+                break;
+            case PlayerAnimationType.SLICE_FROM_ANY_STANCE:
+                animator.SetTrigger("Slice");
+                break;
+            case PlayerAnimationType.THRUST_FROM_ANY_STANCE:
+                animator.SetTrigger("Thrust");
                 break;
         }
     }
